@@ -1,0 +1,398 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tag Manager system #Add Tag</title>
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: #0f1015;
+      --surface-2: #13141a;
+      --border: #27272a;
+      --text: #fafafa;
+      --muted: #a1a1aa;
+      --violet: #a78bfa;
+      --green: #34d399;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 16px 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    .btn {
+      border: 1px solid transparent;
+      background: var(--green);
+      color: #03281d;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #0a0b10;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--violet);
+      box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.35);
+    }
+
+    .dropzone {
+      border: 1px dashed #3f3f46;
+      border-radius: 12px;
+      min-height: 230px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+      padding: 20px;
+      cursor: pointer;
+      background: var(--surface-2);
+    }
+
+    .dropzone.dragover { border-color: var(--violet); }
+    .dropzone strong { color: var(--text); }
+
+    .preview-box {
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #07080c;
+    }
+
+    .preview-box img { max-width: 100%; height: auto; display: block; }
+
+    .status {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+
+    .row {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tiny-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .ok { color: var(--green); }
+    .err { color: var(--danger); }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>Tag Manager system #Add Tag</h1>
+      <button id="saveBtn" class="btn" type="button">Save</button>
+    </div>
+
+    <div class="layout">
+      <section class="card">
+        <h2>Tag Specifications</h2>
+        <div class="grid">
+          <div class="full">
+            <label for="model">Model</label>
+            <input id="model" placeholder="Enter model name...">
+          </div>
+          <div>
+            <label for="partName">Part name</label>
+            <input id="partName" placeholder="Component identifier...">
+          </div>
+          <div>
+            <label for="partNo">Part no</label>
+            <input id="partNo" placeholder="SKU-XXXX-XXX">
+          </div>
+          <div>
+            <label for="qtyPcs">Qty pcs</label>
+            <input id="qtyPcs" type="number" min="0" value="0">
+          </div>
+          <div>
+            <label for="customer">Customer</label>
+            <input id="customer" placeholder="Customer name...">
+          </div>
+          <div class="full">
+            <label for="idCode">ID Code</label>
+            <input id="idCode" placeholder="UID-882-90">
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div id="dropzone" class="dropzone">
+          <div>
+            <strong>Drag & Drop photo or Ctrl+V to Paste</strong><br>
+            Upload image and system will resize to 128px height
+          </div>
+        </div>
+        <input id="photoInput" type="file" accept="image/*" hidden>
+
+        <div class="row">
+          <div id="base64Count">BASE64 STATUS: 0 chars</div>
+          <button id="removePhotoBtn" class="tiny-btn" type="button">Remove Photo</button>
+        </div>
+
+        <div class="preview-box" id="previewBox">No image</div>
+
+        <div id="status" class="status">Ready</div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'PASTE_YOUR_APPS_SCRIPT_WEBAPP_URL_HERE';
+    const TARGET_HEIGHT = 128;
+
+    const dom = {
+      model: document.getElementById('model'),
+      partName: document.getElementById('partName'),
+      partNo: document.getElementById('partNo'),
+      qtyPcs: document.getElementById('qtyPcs'),
+      customer: document.getElementById('customer'),
+      idCode: document.getElementById('idCode'),
+      saveBtn: document.getElementById('saveBtn'),
+      dropzone: document.getElementById('dropzone'),
+      photoInput: document.getElementById('photoInput'),
+      removePhotoBtn: document.getElementById('removePhotoBtn'),
+      base64Count: document.getElementById('base64Count'),
+      previewBox: document.getElementById('previewBox'),
+      status: document.getElementById('status')
+    };
+
+    let photoBase64 = '';
+
+    function setStatus(msg, isError) {
+      dom.status.textContent = msg;
+      dom.status.classList.toggle('err', Boolean(isError));
+      dom.status.classList.toggle('ok', !isError);
+    }
+
+    function updateBase64Status() {
+      dom.base64Count.textContent = `BASE64 STATUS: ${photoBase64.length.toLocaleString()} chars`;
+    }
+
+    function clearPhoto() {
+      photoBase64 = '';
+      dom.photoInput.value = '';
+      dom.previewBox.textContent = 'No image';
+      updateBase64Status();
+      setStatus('Photo removed', false);
+    }
+
+    async function handleFile(file) {
+      if (!file || !file.type.startsWith('image/')) {
+        setStatus('Please upload image file only', true);
+        return;
+      }
+
+      try {
+        const resizedDataUrl = await resizeImageToHeight(file, TARGET_HEIGHT);
+        photoBase64 = resizedDataUrl.split(',')[1] || '';
+
+        const img = document.createElement('img');
+        img.src = resizedDataUrl;
+        dom.previewBox.innerHTML = '';
+        dom.previewBox.appendChild(img);
+
+        updateBase64Status();
+        setStatus('Photo processed: fixed height 128px (keep aspect ratio)', false);
+      } catch (error) {
+        setStatus(`Process image failed: ${error.message}`, true);
+      }
+    }
+
+    function resizeImageToHeight(file, targetHeight) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const ratio = targetHeight / img.height;
+            const width = Math.max(1, Math.round(img.width * ratio));
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = targetHeight;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, targetHeight);
+
+            resolve(canvas.toDataURL('image/jpeg', 0.85));
+          };
+          img.onerror = () => reject(new Error('Cannot read image'));
+          img.src = reader.result;
+        };
+
+        reader.onerror = () => reject(new Error('Cannot load file'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function saveData() {
+      if (!API_URL || API_URL.includes('PASTE_YOUR_APPS_SCRIPT_WEBAPP_URL_HERE')) {
+        setStatus('Set API_URL to your Apps Script Web App URL first', true);
+        return;
+      }
+
+      const payload = {
+        model: dom.model.value,
+        partName: dom.partName.value,
+        partNo: dom.partNo.value,
+        qtyPcs: dom.qtyPcs.value,
+        customer: dom.customer.value,
+        photoBase64,
+        idCode: dom.idCode.value
+      };
+
+      setStatus('Saving to Google Sheet...', false);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (!data.ok) {
+          throw new Error(data.error || 'Unknown error');
+        }
+
+        setStatus(`Saved successfully. Row: ${data.row}`, false);
+      } catch (error) {
+        setStatus(`Save failed: ${error.message}`, true);
+      }
+    }
+
+    dom.dropzone.addEventListener('click', () => dom.photoInput.click());
+
+    dom.photoInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      handleFile(file);
+    });
+
+    dom.dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dom.dropzone.classList.add('dragover');
+    });
+
+    dom.dropzone.addEventListener('dragleave', () => {
+      dom.dropzone.classList.remove('dragover');
+    });
+
+    dom.dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dom.dropzone.classList.remove('dragover');
+      const file = e.dataTransfer.files && e.dataTransfer.files[0];
+      handleFile(file);
+    });
+
+    document.addEventListener('paste', (e) => {
+      const items = e.clipboardData && e.clipboardData.items;
+      if (!items) {
+        return;
+      }
+
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          handleFile(item.getAsFile());
+          break;
+        }
+      }
+    });
+
+    dom.removePhotoBtn.addEventListener('click', clearPhoto);
+    dom.saveBtn.addEventListener('click', saveData);
+
+    updateBase64Status();
+  </script>
+</body>
+</html>
