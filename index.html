@@ -159,6 +159,18 @@
       cursor: pointer;
     }
 
+    .copy-btn {
+      border-color: rgba(167, 139, 250, 0.6);
+      color: var(--violet);
+      background: rgba(167, 139, 250, 0.08);
+      min-width: 52px;
+      text-align: center;
+    }
+
+    .copy-btn:hover {
+      background: rgba(167, 139, 250, 0.16);
+    }
+
     .ok { color: var(--green); }
     .err { color: var(--danger); }
 
@@ -216,7 +228,10 @@
 
         <div class="row">
           <div id="base64Count">BASE64 STATUS: 0 chars</div>
-          <button id="removePhotoBtn" class="tiny-btn" type="button">Remove Photo</button>
+          <div>
+            <button id="copyBase64Btn" class="tiny-btn copy-btn" type="button" title="Copy Base64" aria-label="Copy Base64">Copy</button>
+            <button id="removePhotoBtn" class="tiny-btn" type="button">Remove Photo</button>
+          </div>
         </div>
 
         <div class="preview-box" id="previewBox">No image</div>
@@ -240,6 +255,7 @@
       saveBtn: document.getElementById('saveBtn'),
       dropzone: document.getElementById('dropzone'),
       photoInput: document.getElementById('photoInput'),
+      copyBase64Btn: document.getElementById('copyBase64Btn'),
       removePhotoBtn: document.getElementById('removePhotoBtn'),
       base64Count: document.getElementById('base64Count'),
       previewBox: document.getElementById('previewBox'),
@@ -266,6 +282,28 @@
       setStatus('Photo removed', false);
     }
 
+    async function copyBase64ToClipboard(silent) {
+      if (!photoBase64) {
+        if (!silent) {
+          setStatus('No base64 data to copy', true);
+        }
+        return false;
+      }
+
+      try {
+        await navigator.clipboard.writeText(photoBase64);
+        if (!silent) {
+          setStatus('Copied base64 to clipboard', false);
+        }
+        return true;
+      } catch (error) {
+        if (!silent) {
+          setStatus(`Copy failed: ${error.message}`, true);
+        }
+        return false;
+      }
+    }
+
     async function handleFile(file) {
       if (!file || !file.type.startsWith('image/')) {
         setStatus('Please upload image file only', true);
@@ -282,7 +320,12 @@
         dom.previewBox.appendChild(img);
 
         updateBase64Status();
-        setStatus('Photo processed: fixed height 128px (keep aspect ratio)', false);
+        const copied = await copyBase64ToClipboard(true);
+        if (copied) {
+          setStatus('Photo processed: fixed height 128px (keep aspect ratio) and clipboard updated', false);
+        } else {
+          setStatus('Photo processed: fixed height 128px (keep aspect ratio)', false);
+        }
       } catch (error) {
         setStatus(`Process image failed: ${error.message}`, true);
       }
@@ -390,6 +433,7 @@
     });
 
     dom.removePhotoBtn.addEventListener('click', clearPhoto);
+    dom.copyBase64Btn.addEventListener('click', () => copyBase64ToClipboard(false));
     dom.saveBtn.addEventListener('click', saveData);
 
     updateBase64Status();
