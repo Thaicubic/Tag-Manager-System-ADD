@@ -69,6 +69,12 @@
       padding: 16px;
     }
 
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -171,6 +177,21 @@
       background: rgba(167, 139, 250, 0.16);
     }
 
+    .sheet-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #242227;
+      color: var(--text);
+      padding: 12px 14px;
+      font-size: 20px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
     .ok { color: var(--green); }
     .err { color: var(--danger); }
 
@@ -187,35 +208,45 @@
     </div>
 
     <div class="layout">
-      <section class="card">
-        <h2>Tag Specifications</h2>
-        <div class="grid">
-          <div class="full">
-            <label for="model">Model</label>
-            <input id="model" placeholder="Enter model name...">
+      <div class="left-panel">
+        <section class="card">
+          <h2>Tag Specifications</h2>
+          <div class="grid">
+            <div class="full">
+              <label for="model">Model</label>
+              <input id="model" placeholder="Enter model name...">
+            </div>
+            <div>
+              <label for="partName">Part name</label>
+              <input id="partName" placeholder="Component identifier...">
+            </div>
+            <div>
+              <label for="partNo">Part no</label>
+              <input id="partNo" placeholder="SKU-XXXX-XXX">
+            </div>
+            <div>
+              <label for="qtyPcs">Qty pcs</label>
+              <input id="qtyPcs" type="number" min="0" value="0">
+            </div>
+            <div>
+              <label for="customer">Customer</label>
+              <input id="customer" placeholder="Customer name...">
+            </div>
+            <div class="full">
+              <label for="idCode">ID Code</label>
+              <input id="idCode" placeholder="UID-882-90">
+            </div>
           </div>
-          <div>
-            <label for="partName">Part name</label>
-            <input id="partName" placeholder="Component identifier...">
-          </div>
-          <div>
-            <label for="partNo">Part no</label>
-            <input id="partNo" placeholder="SKU-XXXX-XXX">
-          </div>
-          <div>
-            <label for="qtyPcs">Qty pcs</label>
-            <input id="qtyPcs" type="number" min="0" value="0">
-          </div>
-          <div>
-            <label for="customer">Customer</label>
-            <input id="customer" placeholder="Customer name...">
-          </div>
-          <div class="full">
-            <label for="idCode">ID Code</label>
-            <input id="idCode" placeholder="UID-882-90">
-          </div>
-        </div>
-      </section>
+        </section>
+        <a
+          class="sheet-btn"
+          href="https://docs.google.com/spreadsheets/d/1eaiPY8Hm-zjpCSNoNBm-vFqldNtWh6WglC9_niXlqb8/edit?gid=1720180950"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open Google Sheet
+        </a>
+      </div>
 
       <section class="card">
         <div id="dropzone" class="dropzone">
