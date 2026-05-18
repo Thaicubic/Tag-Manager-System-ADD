@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -313,6 +313,19 @@
       setStatus('Photo removed', false);
     }
 
+    function resetFormAfterSave() {
+      dom.model.value = '';
+      dom.partName.value = '';
+      dom.partNo.value = '';
+      dom.qtyPcs.value = '0';
+      dom.customer.value = '';
+      dom.idCode.value = '';
+      photoBase64 = '';
+      dom.photoInput.value = '';
+      dom.previewBox.textContent = 'No image';
+      updateBase64Status();
+    }
+
     async function copyBase64ToClipboard(silent) {
       if (!photoBase64) {
         if (!silent) {
@@ -420,6 +433,7 @@
           throw new Error(data.error || 'Unknown error');
         }
 
+        resetFormAfterSave();
         setStatus(`Saved successfully. Row: ${data.row}`, false);
       } catch (error) {
         setStatus(`Save failed: ${error.message}`, true);
